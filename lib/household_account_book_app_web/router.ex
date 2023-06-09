@@ -20,6 +20,7 @@ defmodule HouseholdAccountBookAppWeb.Router do
     get "/", PageController, :home
 
     resources "/purchases", PurchaseController
+    resources "/incomes", IncomeController
   end
 
   # Other scopes may use custom stacks.
