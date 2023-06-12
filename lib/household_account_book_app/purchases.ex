@@ -30,6 +30,29 @@ defmodule HouseholdAccountBookApp.Purchases do
     Repo.all(Purchase)
   end
 
+  # 指定した月のカテゴリーごとの購入品金額の合計を計算する関数
+  def get_money_by_categories(%Date{year: year, month: month}) do
+    # 指定した月の最初の日付と終わりの日付を計算
+    start_date = Date.new!(year, month, 1)
+    end_date = Date.end_of_month(start_date)
+
+    query =
+      from(p in Purchase,
+        join: c in assoc(p, :category),
+        where: p.date >= ^start_date and p.date <= ^end_date,
+        group_by: c.category_name,
+        select: {c.category_name, sum(p.money)}
+      )
+
+    # カテゴリーのカラーコードが必要なので再度データベースからカテゴリーを取得
+    query
+    |> Repo.all()
+    |> Enum.map(fn {category_name, money} ->
+      category = Repo.get_by(Category, category_name: category_name)
+      {category.category_name, category.color_code, money}
+    end)
+  end
+
   @doc """
   Gets a single purchase.
 
