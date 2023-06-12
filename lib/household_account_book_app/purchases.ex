@@ -53,6 +53,37 @@ defmodule HouseholdAccountBookApp.Purchases do
     end)
   end
 
+  # 指定した月の日付ごとの金額の合計を計算する関数
+  def get_money_by_date(%Date{year: year, month: month}) do
+    # 指定した月の最初の日付と終わりの日付を計算
+    start_date = Date.new!(year, month, 1)
+    end_date = Date.end_of_month(start_date)
+
+    # 指定した月の日付ごとの合計金額のクエリを作成
+    query =
+      from(p in Purchase,
+        where: p.date >= ^start_date and p.date <= ^end_date,
+        group_by: p.date,
+        select: {p.date, sum(p.money)}
+      )
+
+    # 日付をキー、合計金額を値にマップを作成
+    money_by_date =
+      query
+      |> Repo.all()
+      |> Enum.reduce(%{}, fn {date, money}, map ->
+        Map.merge(map, %{"#{date.year}-#{date.month}-#{date.day}" => money})
+      end)
+
+    # 指定した月の日付と合計金額のセットを作成（登録されていない日付は0とする）
+    for day <- 1..end_date.day do
+      create_date = Date.new!(end_date.year, end_date.month, day)
+      money = Map.get(money_by_date, "#{create_date.year}-#{create_date.month}-#{create_date.day}", 0)
+
+      {create_date, money}
+    end
+  end
+
   @doc """
   Gets a single purchase.
 
