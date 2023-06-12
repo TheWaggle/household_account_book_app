@@ -57,6 +57,11 @@
   Household account book <%= Calendar.strftime(@date, "%Y-%m") %>
 </.header>
 
+<form method="get" class="mt-4">
+  <input type="month" name="date" value={Calendar.strftime(@date, "%Y-%m")} required>
+  <button type="submit" class="rounded-lg bg-blue-300 px-4 py-2 ml-2">Search</button>
+</form>
+
 <div>
   <canvas id="pieChart" class="max-w-md"></canvas>
   <canvas id="barChart"></canvas>
