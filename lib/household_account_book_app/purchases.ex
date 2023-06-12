@@ -31,10 +31,9 @@ defmodule HouseholdAccountBookApp.Purchases do
   end
 
   # 指定した月のカテゴリーごとの購入品金額の合計を計算する関数
-  def get_money_by_categories(%Date{year: year, month: month}) do
-    # 指定した月の最初の日付と終わりの日付を計算
-    start_date = Date.new!(year, month, 1)
-    end_date = Date.end_of_month(start_date)
+  # 引数dateはDate構造体を受け取る
+  def get_money_by_categories(date) do
+    {start_date, end_date} = format_start_and_end_date(date)
 
     query =
       from(p in Purchase,
@@ -54,10 +53,9 @@ defmodule HouseholdAccountBookApp.Purchases do
   end
 
   # 指定した月の日付ごとの金額の合計を計算する関数
-  def get_money_by_date(%Date{year: year, month: month}) do
-    # 指定した月の最初の日付と終わりの日付を計算
-    start_date = Date.new!(year, month, 1)
-    end_date = Date.end_of_month(start_date)
+  # 引数dateはDate構造体を受け取る
+  def get_money_by_date(date) do
+    {start_date, end_date} = format_start_and_end_date(date)
 
     # 指定した月の日付ごとの合計金額のクエリを作成
     query =
@@ -82,6 +80,14 @@ defmodule HouseholdAccountBookApp.Purchases do
 
       {create_date, money}
     end
+  end
+
+  # 指定した月の最初の日付と終わりの日付を計算するプライベート関数
+  defp format_start_and_end_date(%Date{year: year, month: month}) do
+    start_date = Date.new!(year, month, 1)
+    end_date = Date.end_of_month(start_date)
+
+    {start_date, end_date}
   end
 
   @doc """
