@@ -57,13 +57,19 @@
 </.table>
 
 <script>
+  // 引数で受け取ったelementのテキストを文字列の要素を持った配列に変換する関数
+  function replaceAndSplitString(element) {
+    return element.innerHTML.split(',').map(value => value.replace(/(\'|\"|\[|\]| )/g, ''))
+  }
+
+  // 引数で受け取ったelementのテキストを整数の要素を持った配列に変換する関数
+  function replaceAndSplitStringToNumbers(element) {
+    return replaceAndSplitString(element).map(value => Number(value))
+  }
   // 文字列で取得した値を配列に変換する
-  var categories =
-    document.getElementById('categories').innerHTML.split(',').map(value => value.replace(/(\'|\"|\[|\]| )/g, ''))
-  var colorCode =
-    document.getElementById('colorCode').innerHTML.split(',').map(value => value.replace(/(\'|\"|\[|\]| )/g, ''))
-  var categoriesMoney =
-    document.getElementById('categoriesMoney').innerHTML.split(',').map(value => value.replace(/(\'|\"|\[|\]| )/g, '')).map(value => Number(value))
+  var categories = replaceAndSplitString(document.getElementById('categories'))
+  var colorCode = replaceAndSplitString(document.getElementById('colorCode'))
+  var categoriesMoney = replaceAndSplitStringToNumbers(document.getElementById('categoriesMoney'))
 
   // 円グラフを表示するためのエレメントを取得
   var pieCtx = document.getElementById('pieChart')
