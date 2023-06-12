@@ -1,3 +1,5 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <%
   money =
     Enum.map(@money_by_categories, fn {_category, _color_code, money} -> money end)
@@ -12,11 +14,37 @@
         %{"category" => category, "color_code" => color_code, "money" => money}
       end)
     |> List.insert_at(-1, %{"category" => "残高", "color_code" => "#d3d3d3", "money" => balance})
+
+  # 円グラフを描画するために必要なカテゴリーデータ
+  categories =
+    money_by_categories
+    |> Enum.map(& &1["category"])
+    |> inspect()
+
+  # 円グラフを描画するために必要なカラーコードのデータ
+  color_code =
+    money_by_categories
+    |> Enum.map(& &1["color_code"])
+    |> inspect()
+
+  # 円グラフを描画するために必要なカテゴリーごとの合計金額データ
+  categories_money =
+    money_by_categories
+    |> Enum.map(& &1["money"])
+    |> inspect()
 %>
+
+<div id="categories" hidden><%= categories %></div>
+<div id="colorCode" hidden><%= color_code %></div>
+<div id="categoriesMoney" hidden><%= categories_money %></div>
 
 <.header>
   Household account book <%= Calendar.strftime(@date, "%Y-%m") %>
 </.header>
+
+<div>
+  <canvas id="pieChart" class="max-w-md"></canvas>
+</div>
 
 <.table id="moneyByCategory" rows={money_by_categories}>
   <:col :let={money_by_category} label="Category">
@@ -27,3 +55,35 @@
     <%= money_by_category["money"] %>円
   </:col>
 </.table>
+
+<script>
+  // 文字列で取得した値を配列に変換する
+  var categories =
+    document.getElementById('categories').innerHTML.split(',').map(value => value.replace(/(\'|\"|\[|\]| )/g, ''))
+  var colorCode =
+    document.getElementById('colorCode').innerHTML.split(',').map(value => value.replace(/(\'|\"|\[|\]| )/g, ''))
+  var categoriesMoney =
+    document.getElementById('categoriesMoney').innerHTML.split(',').map(value => value.replace(/(\'|\"|\[|\]| )/g, '')).map(value => Number(value))
+
+  // 円グラフを表示するためのエレメントを取得
+  var pieCtx = document.getElementById('pieChart')
+
+  // 円グラフを描画するためのデータを作成
+  // 文字列であれば、Elixirの値を使える
+  const pieChart = new Chart(pieCtx, {
+    type: 'pie',
+    data: {
+      labels: categories,
+      datasets: [{
+        backgroundColor: colorCode,
+        data: categoriesMoney
+      }]
+    },
+    options: {
+      title: {
+        display: true,
+        text: '<%= Calendar.strftime(@date, "%Y-%m") %>'
+      }
+    }
+  })
+</script>
