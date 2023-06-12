@@ -23,9 +23,9 @@ defmodule HouseholdAccountBookApp.Incomes do
 
   # 引数dateにはDate構造体が入る
   # このsum_incomes_by_monthは指定した月の合計を計算し取得する関数
-  def sum_incomes_by_month(date) do
+  def sum_incomes_by_month(%Date{year: year, month: month}) do
     # 指定した月の最初の日付と終わりの日付を計算
-    start_date = Date.new!(date.year, date.month, 1)
+    start_date = Date.new!(year, month, 1)
     end_date = Date.end_of_month(start_date)
 
     query =
