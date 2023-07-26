@@ -17,6 +17,10 @@ defmodule HouseholdAccountBookApp.Purchases do
     end)
   end
 
+  def list_categories(), do: Repo.all(Category)
+
+  def get_category!(id), do: Repo.get!(Category, id)
+
   @doc """
   Returns the list of purchases.
 
@@ -106,6 +110,12 @@ defmodule HouseholdAccountBookApp.Purchases do
   """
   def get_purchase!(id), do: Repo.get!(Purchase, id)
 
+  def create_category(attrs \\ %{}) do
+    %Category{}
+    |> Category.changeset(attrs)
+    |> Repo.insert()
+  end
+
   @doc """
   Creates a purchase.
 
@@ -122,6 +132,12 @@ defmodule HouseholdAccountBookApp.Purchases do
     %Purchase{}
     |> Purchase.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def update_category(%Category{} = category, attrs) do
+    category
+    |> Category.changeset(attrs)
+    |> Repo.update()
   end
 
   @doc """
@@ -142,6 +158,10 @@ defmodule HouseholdAccountBookApp.Purchases do
     |> Repo.update()
   end
 
+  def delete_category(%Category{} = category) do
+    Repo.delete(category)
+  end
+
   @doc """
   Deletes a purchase.
 
@@ -156,6 +176,10 @@ defmodule HouseholdAccountBookApp.Purchases do
   """
   def delete_purchase(%Purchase{} = purchase) do
     Repo.delete(purchase)
+  end
+
+  def change_category(%Category{} = category, attrs \\ %{}) do
+    Category.changeset(category, attrs)
   end
 
   @doc """
